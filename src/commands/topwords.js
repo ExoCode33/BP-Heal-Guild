@@ -1,15 +1,25 @@
+const { SlashCommandBuilder } = require('discord.js');
+
 module.exports = {
-  name: 'topwords',
-  description: 'Show most used words',
-  async execute(message, args, client) {
-    const limit = Math.min(parseInt(args[0]) || 10, 50);
+  data: new SlashCommandBuilder()
+    .setName('topwords')
+    .setDescription('Show most used words')
+    .addIntegerOption(option =>
+      option.setName('limit')
+        .setDescription('Number of words to show (1-50)')
+        .setMinValue(1)
+        .setMaxValue(50)),
+  
+  async execute(interaction, client) {
+    const limit = interaction.options.getInteger('limit') || 10;
+    
     const result = await client.db.query(
       'SELECT word, count FROM word_frequency ORDER BY count DESC LIMIT $1',
       [limit]
     );
     
     if (result.rows.length === 0) {
-      return message.reply('No words tracked yet!');
+      return interaction.reply('No words tracked yet!');
     }
     
     let response = `**Top ${result.rows.length} Words:**\n\`\`\`\n`;
@@ -17,6 +27,7 @@ module.exports = {
       response += `${i + 1}. ${row.word}: ${row.count}\n`;
     });
     response += '```';
-    message.reply(response);
+    
+    await interaction.reply(response);
   },
 };
