@@ -81,28 +81,3 @@ client.db.query(`
 // Login
 client.login(process.env.DISCORD_TOKEN);
 ```
-
----
-
-## ✅ **What This Does**
-
-1. Declares `Client` **once** (line 2)
-2. Creates client **once** (line 7)
-3. Sets up slash commands
-4. Loads all events and commands
-5. Connects to database
-6. Logs in
-
----
-
-## 🚀 **After Fixing**
-
-1. **Replace your entire `index.js`** with the code above
-2. **Push to GitHub**
-3. **Railway will auto-redeploy**
-4. **Check logs** - should see:
-```
-   Registering slash commands...
-   ✅ Slash commands registered!
-   Database ready
-   ✅ Bot online as YourBotName#1234
