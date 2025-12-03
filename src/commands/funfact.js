@@ -1,4 +1,4 @@
-const { EmbedBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 
 const factGenerators = {
   async topWord(db) {
@@ -47,11 +47,13 @@ const factGenerators = {
 };
 
 module.exports = {
-  name: 'funfact',
-  description: 'Get a random fun fact',
-  async execute(message, args, client) {
+  data: new SlashCommandBuilder()
+    .setName('funfact')
+    .setDescription('Get a random fun fact about word usage'),
+  
+  async execute(interaction, client) {
     const fact = await this.getRandom(client.db);
-    if (!fact) return message.reply('No data yet!');
+    if (!fact) return interaction.reply('No data yet!');
     
     const embed = new EmbedBuilder()
       .setTitle(fact.title)
@@ -60,7 +62,7 @@ module.exports = {
       .setFooter({ text: '💡 Fun Fact' })
       .setTimestamp();
     
-    message.reply({ embeds: [embed] });
+    await interaction.reply({ embeds: [embed] });
   },
   
   async getRandom(db) {
