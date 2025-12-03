@@ -37,21 +37,5 @@ module.exports = {
         console.error('Track error:', err);
       }
     }
-    
-    // Handle commands
-    if (!message.content.startsWith('!')) return;
-    
-    const args = message.content.slice(1).trim().split(/\s+/);
-    const commandName = args.shift().toLowerCase();
-    const command = client.commands.get(commandName);
-    
-    if (command) {
-      try {
-        await command.execute(message, args, client);
-      } catch (error) {
-        console.error(error);
-        message.reply('Error executing command!');
-      }
-    }
   },
 };
