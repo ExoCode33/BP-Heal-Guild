@@ -4,7 +4,6 @@ const { Pool } = require('pg');
 const fs = require('fs');
 const path = require('path');
 
-// Create Discord client
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
@@ -13,24 +12,23 @@ const client = new Client({
   ],
 });
 
-// Create PostgreSQL connection pool
 client.db = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
 });
 
-// Load commands
 client.commands = new Collection();
 const commands = [];
 const commandFiles = fs.readdirSync(path.join(__dirname, 'src/commands')).filter(file => file.endsWith('.js'));
+
 for (const file of commandFiles) {
   const command = require(`./src/commands/${file}`);
   client.commands.set(command.data.name, command);
   commands.push(command.data.toJSON());
 }
 
-// Load events
 const eventFiles = fs.readdirSync(path.join(__dirname, 'src/events')).filter(file => file.endsWith('.js'));
+
 for (const file of eventFiles) {
   const event = require(`./src/events/${file}`);
   if (event.once) {
@@ -40,8 +38,8 @@ for (const file of eventFiles) {
   }
 }
 
-// Register slash commands
 const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN);
+
 (async () => {
   try {
     console.log('Registering slash commands...');
@@ -55,7 +53,6 @@ const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN);
   }
 })();
 
-// Initialize database
 client.db.query(`
   CREATE TABLE IF NOT EXISTS word_frequency (
     id SERIAL PRIMARY KEY,
@@ -78,6 +75,4 @@ client.db.query(`
   CREATE INDEX IF NOT EXISTS idx_user_word ON user_word_frequency(user_id, word);
 `).then(() => console.log('Database ready')).catch(console.error);
 
-// Login
 client.login(process.env.DISCORD_TOKEN);
-```
